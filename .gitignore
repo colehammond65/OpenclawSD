@@ -3,4 +3,5 @@ logs/
 com.encrypt.openclaw.sdPlugin/bin/
 com.encrypt.openclaw.sdPlugin/logs/
 .superpowers/
+.cortexkit/
 *.local.json
