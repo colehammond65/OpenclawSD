@@ -178,7 +178,7 @@ export class GatewayService {
 	}
 
 	async usageCost(options: { days?: number } = {}): Promise<UsageCostResult> {
-		const result = await this.request<unknown>("usage.cost", { days: options.days ?? 7 });
+		const result = await this.request<unknown>("usage.cost", { days: options.days ?? 30 });
 		return isRecord(result) ? (result as UsageCostResult) : {};
 	}
 

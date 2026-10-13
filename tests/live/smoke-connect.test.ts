@@ -78,6 +78,15 @@ describe.skipIf(!RUN_LIVE)("live connect", () => {
 					expect(job.name).not.toBe("");
 				}
 				console.log(`[openclaw] cron jobs: ${jobs.length} (${jobs.map((job) => `${job.name}=${job.lastRunStatus ?? "never"}`).join(", ")})`);
+
+				// The Usage path: quota and cost must match the shapes we type.
+				const usage = await service.usageStatus();
+				const cost = await service.usageCost({ days: 30 });
+				expect(Array.isArray(usage.providers), `usage.status: ${JSON.stringify(usage)}`).toBe(true);
+				expect(Array.isArray(cost.daily), `usage.cost: ${JSON.stringify(cost)}`).toBe(true);
+				for (const day of cost.daily ?? []) {
+					expect(typeof day.date).toBe("string");
+				}
 			} finally {
 				connector.stop();
 				if (generated) {

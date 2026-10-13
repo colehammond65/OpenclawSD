@@ -58,6 +58,29 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		{
+			"Name": "Usage",
+			"UUID": "com.encrypt.openclaw.usage",
+			"Icon": "imgs/actions/usage/icon",
+			"Tooltip": "Shows provider quota and spend for your OpenClaw agents.",
+			"PropertyInspectorPath": "ui/usage.html",
+			"Controllers": [
+				"Keypad",
+				"Encoder"
+			],
+			"Encoder": {
+				"layout": "$B1",
+				"TriggerDescription": {
+					"Push": "Refresh usage"
+				}
+			},
+			"States": [
+				{
+					"Image": "imgs/actions/usage/key",
+					"TitleAlignment": "middle"
+				}
+			]
 		}
 	],
 	"Category": "OpenClaw",

@@ -28,26 +28,29 @@ export type CronJobSummary = {
 	nextRunAtMs?: number;
 };
 
-/** Result of `usage.status`: provider quota windows. */
+/** Result of `usage.status`: provider quota windows (empty on local models). */
 export type UsageStatusResult = {
-	cacheStatus?: unknown;
+	updatedAt?: number;
 	providers?: Array<{
-		id: string;
+		id?: string;
 		label?: string;
 		remainingPercent?: number | null;
-		used?: string;
-		total?: string;
 		planName?: string;
 		window?: string;
 	}>;
 };
 
-/** Result of `usage.cost`. */
+/** Result of `usage.cost`: one row per day over the requested window. */
 export type UsageCostResult = {
-	totals?: Record<string, unknown>;
-	today?: number;
-	thirtyDays?: number;
-	cacheStatus?: unknown;
+	updatedAt?: number;
+	days?: number;
+	daily?: Array<{
+		date: string;
+		totalCost?: number;
+		totalTokens?: number;
+		input?: number;
+		output?: number;
+	}>;
 };
 
 /** A pending entry from `exec.approval.list`. */

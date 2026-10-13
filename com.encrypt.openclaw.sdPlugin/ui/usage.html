@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<title>OpenClaw Usage</title>
+		<script src="sdpi-components.js"></script>
+		<style>
+			:root {
+				color-scheme: dark;
+			}
+			body {
+				font-family: "Segoe UI", system-ui, sans-serif;
+				font-size: 9pt;
+				color: #d8d8d8;
+				background: #2d2d2d;
+				margin: 0;
+				padding: 10px;
+			}
+			h1 {
+				font-size: 9pt;
+				color: #969696;
+				margin: 0 0 8px;
+				font-weight: 600;
+			}
+			.row {
+				display: flex;
+				justify-content: space-between;
+				padding: 4px 0;
+				border-bottom: 1px solid #3d3d3d;
+			}
+			.value {
+				color: #d8d8d8;
+			}
+			#providers {
+				margin-top: 8px;
+			}
+			.muted {
+				color: #8a8a8a;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>OpenClaw usage</h1>
+		<div class="row"><span>Quota remaining</span><span class="value" id="worst">—</span></div>
+		<div class="row"><span>Spend today</span><span class="value" id="today">—</span></div>
+		<div class="row"><span id="windowLabel">Spend (30 days)</span><span class="value" id="window">—</span></div>
+		<div id="providers"></div>
+
+		<script src="usage.js"></script>
+	</body>
+</html>
