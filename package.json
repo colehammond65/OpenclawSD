@@ -1,0 +1,32 @@
+{
+    "name": "openclaw-streamdeck",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "rollup -c",
+        "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.encrypt.openclaw\"",
+        "test": "vitest run",
+        "test:live": "vitest run tests/live"
+    },
+    "prettier": "@elgato/prettier-config",
+    "devDependencies": {
+        "@elgato/cli": "^1.10.2",
+        "@elgato/prettier-config": "^0.3.3",
+        "@rollup/plugin-commonjs": "^28.0.2",
+        "@rollup/plugin-node-resolve": "^16.0.0",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^12.1.2",
+        "@tsconfig/node20": "^20.1.4",
+        "@types/node": "22.13.0",
+        "rollup": "^4.32.1",
+        "tslib": "^2.8.1",
+        "typescript": "^5.7.3",
+        "vitest": "^5.0.4"
+    },
+    "dependencies": {
+        "@elgato/streamdeck": "^3.0.2",
+        "@openclaw/gateway-client": "2026.9.3",
+        "@openclaw/gateway-protocol": "2026.9.3"
+    }
+}

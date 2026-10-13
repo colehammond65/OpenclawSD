@@ -1,0 +1,46 @@
+{
+	"Name": "OpenClaw",
+	"Version": "0.1.0.0",
+	"Author": "encrypt",
+	"Actions": [
+		{
+			"Name": "Status",
+			"UUID": "com.encrypt.openclaw.status",
+			"Icon": "imgs/actions/status/icon",
+			"Tooltip": "Shows OpenClaw Gateway health and active runs.",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/status/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		}
+	],
+	"Category": "OpenClaw",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Control and monitor an OpenClaw Gateway from your Stream Deck.",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "10.15"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
+	"UUID": "com.encrypt.openclaw"
+}
