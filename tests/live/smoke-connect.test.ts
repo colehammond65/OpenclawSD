@@ -72,6 +72,12 @@ describe.skipIf(!RUN_LIVE)("live connect", () => {
 
 				// The Run Automation path: real cron rows must survive normalisation.
 				const service = new GatewayService(connector);
+				const rows = await service.listSessions();
+				for (const row of rows) {
+					expect(row.key, `session key missing in ${JSON.stringify(row)}`).not.toBe("");
+				}
+				console.log(`[openclaw] sessions: ${rows.length} (${rows.map((row) => `${row.key}=${row.status ?? "?"}`).join(", ")})`);
+
 				const jobs = await service.listCronJobs();
 				for (const job of jobs) {
 					expect(job.id, `job id missing in ${JSON.stringify(job)}`).not.toBe("");

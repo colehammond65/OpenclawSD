@@ -31,9 +31,14 @@ export function kindFromHealth(health: HealthSnapshot | null, connected: boolean
 	return "ok";
 }
 
-/** How many sessions currently have a run in flight. */
+/** How many sessions have a run in flight (queued or running). */
 export function activeRunCount(rows: SessionRow[]): number {
-	return rows.filter((row) => row.hasActiveRun).length;
+	return rows.filter((row) => row.status === "running" || row.status === "queued").length;
+}
+
+/** The most human name a session has, falling back to its key. */
+export function sessionLabel(row: SessionRow): string {
+	return row.label ?? row.displayName ?? row.derivedTitle ?? row.key;
 }
 
 /** Connection lifecycle as a face: not-yet-configured is neutral, not an error. */

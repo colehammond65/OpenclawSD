@@ -6,6 +6,7 @@ import type {
 	HealthSnapshot,
 	QueueMode,
 	SessionRow,
+	SessionStatus,
 	UsageCostResult,
 	UsageStatusResult,
 } from "./types";
@@ -282,13 +283,25 @@ function normaliseSession(value: unknown): SessionRow {
 	return {
 		key: typeof row.key === "string" ? row.key : "",
 		sessionId: typeof row.sessionId === "string" ? row.sessionId : undefined,
-		title: typeof row.title === "string" ? row.title : null,
-		label: typeof row.label === "string" ? row.label : null,
-		hasActiveRun: row.hasActiveRun === true,
-		activeRunIds: Array.isArray(row.activeRunIds) ? (row.activeRunIds as string[]) : null,
+		label: typeof row.label === "string" ? row.label : undefined,
+		displayName: typeof row.displayName === "string" ? row.displayName : undefined,
+		derivedTitle: typeof row.derivedTitle === "string" ? row.derivedTitle : undefined,
 		agentId: typeof row.agentId === "string" ? row.agentId : undefined,
+		status: isSessionStatus(row.status) ? row.status : undefined,
+		isMain: row.isMain === true,
+		lastRunId: typeof row.lastRunId === "string" ? row.lastRunId : undefined,
+		lastRunError: typeof row.lastRunError === "string" ? row.lastRunError : undefined,
 		updatedAt: typeof row.updatedAt === "number" ? row.updatedAt : null,
+		totalTokens: typeof row.totalTokens === "number" ? row.totalTokens : undefined,
+		estimatedCostUsd: typeof row.estimatedCostUsd === "number" ? row.estimatedCostUsd : undefined,
+		model: typeof row.model === "string" ? row.model : undefined,
 	};
+}
+
+const SESSION_STATUSES: SessionStatus[] = ["queued", "running", "done", "failed", "killed", "timeout"];
+
+function isSessionStatus(value: unknown): value is SessionStatus {
+	return typeof value === "string" && (SESSION_STATUSES as string[]).includes(value);
 }
 
 function normaliseJob(value: unknown): CronJobSummary {

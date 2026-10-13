@@ -4,16 +4,24 @@
  * rows under a key, the wrapper types in `service.ts` unwrap them.
  */
 
-/** A row from `sessions.list`. */
+/** A row from `sessions.list` (fields per the Gateway's SessionRow schema). */
+export type SessionStatus = "queued" | "running" | "done" | "failed" | "killed" | "timeout";
+
 export type SessionRow = {
 	key: string;
 	sessionId?: string;
-	title?: string | null;
-	label?: string | null;
-	hasActiveRun: boolean;
-	activeRunIds?: string[] | null;
+	label?: string;
+	displayName?: string;
+	derivedTitle?: string;
 	agentId?: string;
+	status?: SessionStatus;
+	isMain?: boolean;
+	lastRunId?: string;
+	lastRunError?: string;
 	updatedAt?: number | null;
+	totalTokens?: number;
+	estimatedCostUsd?: number;
+	model?: string;
 };
 
 /** A job row from `cron.list` (fields per the Gateway's CronJob schema). */
