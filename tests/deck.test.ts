@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { activeRunCount, imageForStatus, kindFromHealth, kindFromPhase, sessionLabel, statusTitle } from "../src/lib/deck";
+import { activeRunCount, imageForStatus, kindFromHealth, kindFromPhase, sessionLabel, statusKindFromPhase, statusTitle } from "../src/lib/deck";
 import type { SessionRow } from "../src/gateway/types";
 
 describe("deck rendering", () => {
@@ -29,6 +29,14 @@ describe("deck rendering", () => {
 		expect(kindFromPhase("disconnected")).toBe("neutral");
 	});
 
+	it("treats a lost connection as down for the status key", () => {
+		expect(statusKindFromPhase("disconnected")).toBe("error");
+		expect(statusKindFromPhase("error")).toBe("error");
+		expect(statusKindFromPhase("connecting")).toBe("running");
+		expect(statusKindFromPhase("pairing")).toBe("warn");
+		expect(statusKindFromPhase("ready")).toBe("ok");
+	});
+
 	it("counts sessions with a run in flight", () => {
 		const rows: SessionRow[] = [
 			{ key: "a", status: "running" },
@@ -41,8 +49,7 @@ describe("deck rendering", () => {
 		expect(activeRunCount([])).toBe(0);
 	});
 
-	it("labels a session by the first useful name", () => {
-		expect(sessionLabel({ key: "agent:main:main", label: "Main" })).toBe("Main");
+	it("labels a session by the first useful name", () => {		expect(sessionLabel({ key: "agent:main:main", label: "Main" })).toBe("Main");
 		expect(sessionLabel({ key: "agent:main:main", displayName: "Main agent" })).toBe("Main agent");
 		expect(sessionLabel({ key: "agent:main:main", derivedTitle: "Fixing the deck" })).toBe("Fixing the deck");
 		expect(sessionLabel({ key: "agent:main:main" })).toBe("agent:main:main");

@@ -56,3 +56,20 @@ export function kindFromPhase(phase: ConnectorPhase): StatusKind {
 			return "neutral";
 	}
 }
+
+/**
+ * Connection lifecycle as a *reachability* face for the Status key: a Gateway
+ * that is not answering is DOWN, whether it refused us or went away.
+ */
+export function statusKindFromPhase(phase: ConnectorPhase): StatusKind {
+	switch (phase) {
+		case "ready":
+			return "ok";
+		case "connecting":
+			return "running";
+		case "pairing":
+			return "warn";
+		default:
+			return "error";
+	}
+}

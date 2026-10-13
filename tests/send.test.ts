@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { sendOutcomeMessage } from "../src/lib/send";
+import { sendIdleFace, sendOutcomeMessage } from "../src/lib/send";
 
 describe("send outcome", () => {
 	it("reports a thrown failure with its message", () => {
@@ -27,5 +27,12 @@ describe("send outcome", () => {
 		const outcome = sendOutcomeMessage(null, new Error("a very long failure message that will not fit"));
 
 		expect(outcome.short.length).toBeLessThanOrEqual(24);
+	});
+
+	it("keeps showing the configured prompt on the idle face", () => {
+		expect(sendIdleFace("summarise my inbox", true)).toEqual({ kind: "neutral", label: "Send", detail: "summarise m..." });
+		expect(sendIdleFace(undefined, true)).toEqual({ kind: "neutral", label: "Send", detail: "set a prompt" });
+		expect(sendIdleFace("  ", true)).toEqual({ kind: "neutral", label: "Send", detail: "set a prompt" });
+		expect(sendIdleFace("ping", false)).toEqual({ kind: "error", label: "Send", detail: "ping" });
 	});
 });

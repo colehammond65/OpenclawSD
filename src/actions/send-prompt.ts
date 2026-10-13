@@ -12,7 +12,7 @@ import type { JsonObject, JsonValue } from "@elgato/utils";
 import { gatewayService } from "../gateway";
 import type { QueueMode } from "../gateway/types";
 import { imageForStatus, sessionLabel, statusTitle, type StatusKind } from "../lib/deck";
-import { sendOutcomeMessage } from "../lib/send";
+import { sendIdleFace, sendOutcomeMessage } from "../lib/send";
 
 /** How long an outcome stays on the key before it returns to idle. */
 const OUTCOME_MS = 4_000;
@@ -78,17 +78,17 @@ export class SendPrompt extends SingletonAction<Settings> {
 
 		if (!prompt) {
 			await alert(action);
-			await this.flash(action, { kind: "warn", label: "No prompt", detail: "set one first" });
+			await this.flash(action, settings, { kind: "warn", label: "No prompt", detail: "set one first" });
 			return;
 		}
 
 		if (gatewayService.state.phase !== "ready") {
 			await alert(action);
-			await this.flash(action, { kind: "error", label: "DOWN", detail: "no gateway" });
+			await this.flash(action, settings, { kind: "error", label: "DOWN", detail: "no gateway" });
 			return;
 		}
 
-		await this.flash(action, { kind: "running", label: "Sending", detail: settings.sessionKey ? "to session" : "to main" });
+		await this.flash(action, settings, { kind: "running", label: "Sending", detail: settings.sessionKey ? "to session" : "to main" });
 
 		let outcome;
 		try {
@@ -108,7 +108,7 @@ export class SendPrompt extends SingletonAction<Settings> {
 			await alert(action);
 		}
 
-		await this.flash(action, {
+		await this.flash(action, settings, {
 			kind: outcome.status === "ok" ? "ok" : "error",
 			label: outcome.status === "ok" ? "Sent" : "Failed",
 			detail: outcome.short,
@@ -116,13 +116,13 @@ export class SendPrompt extends SingletonAction<Settings> {
 	}
 
 	/** Shows a face for a moment, then falls back to the idle face. */
-	private async flash(action: Action<Settings>, face: Face): Promise<void> {
+	private async flash(action: Action<Settings>, settings: Settings, face: Face): Promise<void> {
 		this.transient.set(action.id, face);
 		await render(action, face);
 
 		setTimeout(() => {
 			this.transient.delete(action.id);
-			void this.renderOne(action, {}).catch(() => undefined);
+			void this.renderOne(action, settings).catch(() => undefined);
 		}, OUTCOME_MS);
 	}
 
@@ -138,13 +138,7 @@ export class SendPrompt extends SingletonAction<Settings> {
 }
 
 function idleFace(settings: Settings): Face {
-	const prompt = (settings.prompt ?? "").trim();
-
-	return {
-		kind: gatewayService.state.phase === "ready" ? "neutral" : "error",
-		label: "Send",
-		detail: prompt ? shorten(prompt) : "set a prompt",
-	};
+	return sendIdleFace(settings.prompt, gatewayService.state.phase === "ready");
 }
 
 async function render(action: Action<Settings>, face: Face): Promise<void> {
@@ -160,6 +154,4 @@ async function alert(action: Action<Settings>): Promise<void> {
 	}
 }
 
-function shorten(text: string): string {
-	return text.length <= 14 ? text : `${text.slice(0, 11)}...`;
-}
+

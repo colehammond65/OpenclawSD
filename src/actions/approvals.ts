@@ -1,9 +1,12 @@
 import streamDeck, {
 	action,
 	type Action,
+	type DialDownEvent,
+	type DialUpEvent,
 	type KeyDownEvent,
 	type KeyUpEvent,
 	SingletonAction,
+	type TouchTapEvent,
 	type WillAppearEvent,
 } from "@elgato/streamdeck";
 import type { JsonObject } from "@elgato/utils";
@@ -15,6 +18,9 @@ import { imageForStatus, statusTitle } from "../lib/deck";
 
 /** Presses longer than this deny instead of approve. */
 const LONG_PRESS_MS = 700;
+
+/** Indicator layout for the dial variant. */
+const DIAL_LAYOUT = "$B1";
 
 type Face = { kind: "neutral" | "warn" | "error"; label: string; detail: string };
 
@@ -48,6 +54,19 @@ export class Approvals extends SingletonAction<JsonObject> {
 	override async onKeyUp(ev: KeyUpEvent<JsonObject>): Promise<void> {
 		const held = Date.now() - this.pressedAt;
 		await this.resolve(ev.action, held >= LONG_PRESS_MS ? "deny" : "allow-once");
+	}
+
+	override async onDialDown(ev: DialDownEvent<JsonObject>): Promise<void> {
+		this.pressedAt = Date.now();
+	}
+
+	override async onDialUp(ev: DialUpEvent<JsonObject>): Promise<void> {
+		const held = Date.now() - this.pressedAt;
+		await this.resolve(ev.action, held >= LONG_PRESS_MS ? "deny" : "allow-once");
+	}
+
+	override async onTouchTap(ev: TouchTapEvent<JsonObject>): Promise<void> {
+		await this.resolve(ev.action, "allow-once");
 	}
 
 	private async onRequested(payload: unknown): Promise<void> {
@@ -139,5 +158,11 @@ async function render(action: Action<JsonObject>, face: Face): Promise<void> {
 	if (action.isKey()) {
 		await action.setImage(imageForStatus(face.kind));
 		await action.setTitle(statusTitle(face.label, face.detail));
+		return;
+	}
+
+	if (action.isDial()) {
+		await action.setFeedbackLayout(DIAL_LAYOUT);
+		await action.setFeedback({ indicator: face.kind === "warn" ? 1 : 0, title: "Approvals", value: face.detail });
 	}
 }

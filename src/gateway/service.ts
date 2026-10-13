@@ -154,9 +154,11 @@ export class GatewayService {
 		return extractRows(result, "sessions").map(normaliseSession);
 	}
 
+	/** Subscribes to the live roster; the snapshot it returns seeds the cache. */
 	async subscribeSessions(): Promise<void> {
 		const result = await this.request<unknown>("sessions.subscribe", { limit: 60, ownerFirst: true });
-		const rows = extractRows(result, "sessions");
+		const snapshot = isRecord(result) && isRecord(result.list) ? result.list : result;
+		const rows = extractRows(snapshot, "sessions");
 		if (rows.length > 0) {
 			this.cachedSessions = rows.map(normaliseSession);
 		}
@@ -233,12 +235,26 @@ export class GatewayService {
 		this.current = state;
 
 		if (state.phase === "ready" && previous.phase !== "ready") {
-			void this.refresh();
+			void this.onReady();
 		}
 
 		for (const listener of [...this.stateListeners]) {
 			listener(state);
 		}
+	}
+
+	/**
+	 * Every fresh handshake: subscribe to the live roster, then read the cache.
+	 * A subscription is an optimisation, so a failure must not stop the refresh.
+	 */
+	private async onReady(): Promise<void> {
+		try {
+			await this.subscribeSessions();
+		} catch (error) {
+			console.error(`[openclaw] sessions.subscribe failed: ${error instanceof Error ? error.message : String(error)}`);
+		}
+
+		await this.refresh();
 	}
 
 	private handleEvent(evt: { event: string; payload: unknown }): void {

@@ -10,8 +10,7 @@ export function worstRemainingPercent(status: UsageStatusResult): number | null 
 	return values.length > 0 ? Math.min(...values) : null;
 }
 
-/**
- * Face colour for a usage reading. No quota data is normal — local models have
+/** Face colour for a usage reading. No quota data is normal — local models have
  * no provider quota — so it is neutral rather than an error.
  */
 export function usageKind(worst: number | null): StatusKind {

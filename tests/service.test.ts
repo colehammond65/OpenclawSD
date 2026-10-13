@@ -103,8 +103,7 @@ describe("GatewayService", () => {
 		await expect(service.listCronJobs()).resolves.toEqual([]);
 	});
 
-	it("fans out named events only to their subscribers", () => {
-		const { connector, fire } = stubConnector();
+	it("fans out named events only to their subscribers", () => {		const { connector, fire } = stubConnector();
 		const service = new GatewayService(connector);
 		const cron: unknown[] = [];
 
@@ -115,11 +114,44 @@ describe("GatewayService", () => {
 		expect(cron).toEqual([{ x: 1 }]);
 	});
 
+	it("subscribes to sessions when the connection becomes ready", async () => {
+		const { connector, requests } = stubConnector();
+		const service = new GatewayService(connector);
+
+		service.start();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		const methods = requests.map(([method]) => method);
+		expect(methods).toContain("sessions.subscribe");
+		expect(methods.indexOf("sessions.subscribe")).toBeLessThan(methods.indexOf("sessions.list"));
+	});
+
+	it("caches the roster returned by sessions.subscribe", async () => {
+		const { connector } = stubConnector();
+		connector.request = async <T,>(method: string): Promise<T> => {
+			if (method === "sessions.subscribe") {
+				return { subscribed: true, list: { sessions: [{ key: "agent:main:main", status: "running" }] } } as T;
+			}
+			if (method === "sessions.list") {
+				throw new Error("list unavailable");
+			}
+			return {} as T;
+		};
+		const service = new GatewayService(connector);
+
+		service.start();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		expect(service.sessionList.map((row) => row.key)).toEqual(["agent:main:main"]);
+	});
+
 	it("refresh keeps last-good data when the Gateway goes away", async () => {
 		const { connector, setState } = stubConnector();
 		const service = new GatewayService(connector);
-		service.start();
 
+		service.start();
+		// Let the ready transition's own refresh settle before capturing the cache.
+		await new Promise((resolve) => setTimeout(resolve, 0));
 		await service.refresh();
 		const before = service.sessionList;
 		setState({ phase: "error", detail: "down" });

@@ -2,7 +2,7 @@ import { action, type DialAction, type KeyAction, SingletonAction, type WillAppe
 import type { JsonObject } from "@elgato/utils";
 
 import { gatewayService } from "../gateway";
-import { activeRunCount, imageForStatus, statusTitle, type StatusKind } from "../lib/deck";
+import { activeRunCount, imageForStatus, statusKindFromPhase, statusTitle, type StatusKind } from "../lib/deck";
 
 /** Bursts of Gateway events are coalesced into one repaint. */
 const RENDER_DEBOUNCE_MS = 250;
@@ -62,17 +62,18 @@ export class Status extends SingletonAction<JsonObject> {
 function faceOf(): Face {
 	const state = gatewayService.state;
 	const busy = activeRunCount(gatewayService.sessionList);
+	const kind = statusKindFromPhase(state.phase);
 
-	if (state.phase === "pairing") {
-		return { kind: "warn", label: "PAIR", detail: "approve on the host" };
+	if (kind === "warn") {
+		return { kind, label: "PAIR", detail: "approve on the host" };
 	}
 
-	if (state.phase === "error") {
-		return { kind: "error", label: "DOWN", detail: shorten(state.detail) };
+	if (kind === "running") {
+		return { kind, label: "Connecting", detail: "" };
 	}
 
-	if (state.phase !== "ready") {
-		return { kind: "neutral", label: "Idle", detail: "not connected" };
+	if (kind === "error") {
+		return { kind, label: "DOWN", detail: shorten(state.detail) };
 	}
 
 	if (busy > 0) {

@@ -78,6 +78,12 @@ describe.skipIf(!RUN_LIVE)("live connect", () => {
 				}
 				console.log(`[openclaw] sessions: ${rows.length} (${rows.map((row) => `${row.key}=${row.status ?? "?"}`).join(", ")})`);
 
+				// The subscribe path: the real roster snapshot must unwrap.
+				await service.subscribeSessions();
+				for (const row of service.sessionList) {
+					expect(row.key, `subscribed row missing key: ${JSON.stringify(row)}`).not.toBe("");
+				}
+
 				const jobs = await service.listCronJobs();
 				for (const job of jobs) {
 					expect(job.id, `job id missing in ${JSON.stringify(job)}`).not.toBe("");
