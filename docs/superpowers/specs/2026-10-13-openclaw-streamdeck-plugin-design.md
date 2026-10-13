@@ -117,11 +117,29 @@ document is the agreed description of what gets built.
 
 ### Environment (verified on Cole's machine)
 
-- Node `v26.7.0`, npm `11.19.0`.
-- OpenClaw CLI `2026.9.3` on PATH (`C:\nvm4w\nodejs\openclaw.ps1`).
-- Gateway **not currently listening** on port 18789 — testing requires starting
-  it (`openclaw gateway`).
-- Stream Deck CLI not yet installed globally.
+- Node `v26.7.0`, npm `11.19.0`; OpenClaw CLI `2026.9.3` on PATH
+  (`C:\nvm4w\nodejs\openclaw.ps1`).
+- `~/.openclaw/openclaw.json` has **no `gateway` block**, and the Gateway
+  **refuses to start** without `gateway.mode`:
+  `Gateway start blocked: existing config is missing gateway.mode`. It starts
+  with `openclaw gateway --allow-unconfigured` (or after setting
+  `gateway.mode=local`).
+- With no `gateway.auth` configured the Gateway generates an **ephemeral
+  runtime token per startup** ("restart will generate a different token"), so
+  its effective `auth.mode` is `token`. A stable setup needs
+  `openclaw config set gateway.auth.mode token` +
+  `openclaw config set gateway.auth.token <token>`.
+- **Loopback device pairing auto-approves.** Measured: the Gateway logged
+  `device pairing auto-approved ... role=operator`, and `openclaw devices list`
+  showed the plugin's device with exactly
+  `operator.read, operator.write, operator.approvals`. The manual
+  `openclaw devices approve` path is therefore a fallback for non-loopback
+  Gateways, not the normal flow here.
+- Verified end to end during implementation: live connect succeeds with
+  `--auth none` and with `--token <value>`; a wrong token yields an immediate,
+  readable error (`unauthorized: gateway token mismatch`).
+- Stream Deck 7.6 with a Stream Deck Neo is installed on this machine
+  (app version `7.6.0.23012`).
 
 ## Decisions
 
@@ -267,11 +285,12 @@ document alone.
   every external operator client includes the signed `device` block; the only
   device-less exceptions are the Gateway's own reserved internal backend path and
   trusted-proxy Control UI auth — neither applies to us. So the Ed25519
-  identity/signing/pairing work stays on the Phase 0 critical path. This install's
-  `~/.openclaw/openclaw.json` has **no `gateway` block**, so the effective auth
-  mode and whether a shared bootstrap token/password is also needed are
-  determined at Phase 0 (start the Gateway, inspect `gateway.auth`). A loopback
-  client may need no shared secret and still needs its device identity.
+  identity/signing/pairing work stays on the Phase 0 critical path. **Measured:**
+  this install's `~/.openclaw/openclaw.json` has no `gateway` block, so the
+  Gateway runs `auth.mode=token` with an ephemeral token per startup, which makes
+  the wizard's token field *required* here. Device identity is still required
+  (and was auto-approved on loopback); a shared secret is not needed only when
+  the Gateway is deliberately run with `--auth none`.
 - **Approvals is Key + Encoder.** Dial push = approve, long touch = deny; the key
   variant approves on press and denies on long-press (a key-up timer). One action
   with `Controllers: ["Keypad", "Encoder"]`.
