@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<title>OpenClaw Setup</title>
+		<script src="sdpi-components.js"></script>
+		<style>
+			:root {
+				color-scheme: dark;
+			}
+			body {
+				font-family: "Segoe UI", system-ui, sans-serif;
+				font-size: 9pt;
+				color: #d8d8d8;
+				background: #2d2d2d;
+				margin: 0;
+				padding: 10px;
+			}
+			label {
+				display: block;
+				margin: 10px 0 4px;
+				color: #969696;
+			}
+			input,
+			select {
+				width: 100%;
+				box-sizing: border-box;
+				padding: 5px 6px;
+				background: #3d3d3d;
+				color: #d8d8d8;
+				border: 1px solid #4d4d4d;
+				border-radius: 4px;
+				font-size: 9pt;
+			}
+			button {
+				margin-right: 6px;
+				padding: 5px 10px;
+				background: #4d4d4d;
+				color: #d8d8d8;
+				border: 1px solid #5d5d5d;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 9pt;
+			}
+			button:hover {
+				background: #5d5d5d;
+			}
+			#status {
+				margin-top: 12px;
+				padding: 8px;
+				border-radius: 4px;
+				background: #3d3d3d;
+				border-left: 3px solid #6b7280;
+				white-space: pre-wrap;
+			}
+			#status.ok {
+				border-left-color: #10b981;
+			}
+			#status.warn {
+				border-left-color: #f59e0b;
+			}
+			#status.error {
+				border-left-color: #ef4444;
+			}
+			#status.running {
+				border-left-color: #3b82f6;
+			}
+			code {
+				display: inline-block;
+				background: #262626;
+				padding: 2px 5px;
+				border-radius: 3px;
+				user-select: all;
+				margin-bottom: 4px;
+			}
+			.hidden {
+				display: none;
+			}
+			.meta {
+				color: #8a8a8a;
+				font-size: 8pt;
+				margin-top: 10px;
+				white-space: pre-wrap;
+				word-break: break-all;
+			}
+		</style>
+	</head>
+	<body>
+		<label for="url">Gateway URL</label>
+		<input id="url" type="text" placeholder="ws://127.0.0.1:18789" spellcheck="false" />
+
+		<label for="authKind">Authentication</label>
+		<select id="authKind">
+			<option value="none">None — Gateway runs with --auth none</option>
+			<option value="token">Shared token</option>
+			<option value="password">Password</option>
+		</select>
+
+		<div id="secretRow" class="hidden">
+			<label for="secret">Token / password</label>
+			<input id="secret" type="password" spellcheck="false" placeholder="paste the Gateway's shared secret" />
+		</div>
+
+		<div style="margin-top: 12px">
+			<button id="save">Save + test connection</button>
+		</div>
+
+		<div id="status" class="running">Reading configuration…</div>
+
+		<div id="pairing" class="hidden">
+			<p>This device needs approval on the Gateway host. Run:</p>
+			<code>openclaw devices list</code><br />
+			<code id="approve">openclaw devices approve &lt;requestId&gt;</code>
+			<p><button id="copy">Copy approve command</button></p>
+		</div>
+
+		<div id="meta" class="meta"></div>
+
+		<script src="setup.js"></script>
+	</body>
+</html>

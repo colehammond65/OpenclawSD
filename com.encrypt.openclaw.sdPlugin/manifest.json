@@ -4,6 +4,22 @@
 	"Author": "encrypt",
 	"Actions": [
 		{
+			"Name": "Setup",
+			"UUID": "com.encrypt.openclaw.setup",
+			"Icon": "imgs/actions/setup/icon",
+			"Tooltip": "Configure the connection to your OpenClaw Gateway.",
+			"PropertyInspectorPath": "ui/setup.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/setup/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Status",
 			"UUID": "com.encrypt.openclaw.status",
 			"Icon": "imgs/actions/status/icon",

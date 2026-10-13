@@ -8,12 +8,14 @@
         "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.encrypt.openclaw\"",
         "test": "vitest run",
         "typecheck": "tsc --noEmit",
+        "icons": "node scripts/gen-icons.mjs",
         "test:live": "vitest run tests/live"
     },
     "prettier": "@elgato/prettier-config",
     "devDependencies": {
         "@elgato/cli": "^1.10.2",
         "@elgato/prettier-config": "^0.3.3",
+        "@elgato/utils": "^0.6.1",
         "@rollup/plugin-commonjs": "^28.0.2",
         "@rollup/plugin-node-resolve": "^16.0.0",
         "@rollup/plugin-terser": "^0.4.4",

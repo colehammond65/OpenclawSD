@@ -57,7 +57,7 @@ export class GatewayService {
 	private cachedJobs: CronJobSummary[] = [];
 	private lastRefreshAt = 0;
 
-	constructor(private readonly connector: GatewayConnector) {
+	constructor(private connector: GatewayConnector) {
 		this.subscribe();
 	}
 
@@ -92,6 +92,19 @@ export class GatewayService {
 	stop(): void {
 		this.connector.stop();
 		this.unsubscribe();
+	}
+
+	/**
+	 * Swaps the transport and starts it, so new settings take effect without
+	 * restarting the plugin. The old connector is stopped first.
+	 */
+	replaceConnector(connector: GatewayConnector): void {
+		this.connector.stop();
+		this.unsubscribe();
+
+		this.connector = connector;
+		this.subscribe();
+		this.connector.start();
 	}
 
 	/** Subscribes to one Gateway event; the returned function unsubscribes. */

@@ -127,4 +127,18 @@ describe("GatewayService", () => {
 		await expect(service.refresh()).resolves.toBeUndefined();
 		expect(service.sessionList).toBe(before);
 	});
+
+	it("replaces the connector and follows the new one", () => {
+		const first = stubConnector();
+		const second = stubConnector();
+		const service = new GatewayService(first.connector);
+		service.start();
+
+		service.replaceConnector(second.connector);
+		first.setState({ phase: "error", detail: "stale" });
+		second.setState({ phase: "ready", detail: "fresh" });
+
+		expect(service.state.phase).toBe("ready");
+		expect(service.state.detail).toBe("fresh");
+	});
 });

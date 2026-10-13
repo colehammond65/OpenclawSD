@@ -1,4 +1,5 @@
 node_modules/
+logs/
 com.encrypt.openclaw.sdPlugin/bin/
 com.encrypt.openclaw.sdPlugin/logs/
 .superpowers/
