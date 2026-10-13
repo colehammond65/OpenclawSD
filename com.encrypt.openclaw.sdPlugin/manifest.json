@@ -97,6 +97,21 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		{
+			"Name": "Approvals",
+			"UUID": "com.encrypt.openclaw.approvals",
+			"Icon": "imgs/actions/approvals/icon",
+			"Tooltip": "Approve or deny OpenClaw exec approvals. Press to allow once, hold to deny.",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/approvals/key",
+					"TitleAlignment": "middle"
+				}
+			]
 		}
 	],
 	"Category": "OpenClaw",

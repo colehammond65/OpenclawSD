@@ -1,5 +1,6 @@
 import { GatewayEventBus, type GatewayEventName } from "./events";
 import type {
+	ApprovalDecision,
 	ApprovalItem,
 	ChatSendResult,
 	CronJobSummary,
@@ -202,12 +203,9 @@ export class GatewayService {
 		return extractRows(result, "approvals").map(normaliseApproval);
 	}
 
-	async resolveApproval(approval: { id: string; kind: string; decision: "approve" | "deny" }): Promise<unknown> {
-		return this.request("exec.approval.resolve", {
-			id: approval.id,
-			kind: approval.kind,
-			decision: approval.decision,
-		});
+	/** `exec.approval.resolve` takes only the id and the decision. */
+	async resolveApproval(approval: { id: string; decision: ApprovalDecision }): Promise<unknown> {
+		return this.request("exec.approval.resolve", { id: approval.id, decision: approval.decision });
 	}
 
 	private subscribe(): void {
@@ -323,12 +321,16 @@ function normaliseJob(value: unknown): CronJobSummary {
 }
 
 function normaliseApproval(value: unknown): ApprovalItem {
-	const approval = isRecord(value) ? value : {};
+	const row = isRecord(value) ? value : {};
+	const presentation = isRecord(row.presentation) ? row.presentation : {};
 
 	return {
-		id: typeof approval.id === "string" ? approval.id : "",
-		kind: typeof approval.kind === "string" ? approval.kind : "exec",
-		summary: typeof approval.summary === "string" ? approval.summary : undefined,
-		requestedAt: typeof approval.requestedAt === "number" ? approval.requestedAt : undefined,
+		id: typeof row.id === "string" ? row.id : "",
+		status: typeof row.status === "string" ? row.status : undefined,
+		createdAtMs: typeof row.createdAtMs === "number" ? row.createdAtMs : undefined,
+		expiresAtMs: typeof row.expiresAtMs === "number" ? row.expiresAtMs : undefined,
+		commandText: typeof presentation.commandText === "string" ? presentation.commandText : undefined,
+		host: typeof presentation.host === "string" ? presentation.host : undefined,
+		sessionKey: typeof row.sourceSessionKey === "string" ? row.sourceSessionKey : undefined,
 	};
 }

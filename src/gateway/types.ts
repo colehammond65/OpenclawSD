@@ -61,12 +61,18 @@ export type UsageCostResult = {
 	}>;
 };
 
-/** A pending entry from `exec.approval.list`. */
+/** Reviewer decisions the Gateway accepts for an exec approval. */
+export type ApprovalDecision = "allow-once" | "allow-always" | "deny";
+
+/** A pending row from `exec.approval.list` (an approval snapshot). */
 export type ApprovalItem = {
 	id: string;
-	kind: string;
-	summary?: string;
-	requestedAt?: number;
+	status?: string;
+	createdAtMs?: number;
+	expiresAtMs?: number;
+	commandText?: string;
+	host?: string;
+	sessionKey?: string;
 };
 
 /** Result of `chat.send`. */

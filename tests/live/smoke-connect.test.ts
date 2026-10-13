@@ -93,6 +93,10 @@ describe.skipIf(!RUN_LIVE)("live connect", () => {
 				for (const day of cost.daily ?? []) {
 					expect(typeof day.date).toBe("string");
 				}
+
+				// Approvals: an empty list is normal, and must not throw.
+				const approvals = await service.listApprovals();
+				expect(Array.isArray(approvals)).toBe(true);
 			} finally {
 				connector.stop();
 				if (generated) {
