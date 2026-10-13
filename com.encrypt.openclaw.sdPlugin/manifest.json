@@ -34,6 +34,30 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		{
+			"Name": "Run Automation",
+			"UUID": "com.encrypt.openclaw.run-automation",
+			"Icon": "imgs/actions/run-automation/icon",
+			"Tooltip": "Runs a chosen OpenClaw automation immediately.",
+			"PropertyInspectorPath": "ui/run-automation.html",
+			"Controllers": [
+				"Keypad",
+				"Encoder"
+			],
+			"Encoder": {
+				"layout": "$B1",
+				"TriggerDescription": {
+					"Push": "Run now",
+					"Rotate": "Choose automation"
+				}
+			},
+			"States": [
+				{
+					"Image": "imgs/actions/run-automation/key",
+					"TitleAlignment": "middle"
+				}
+			]
 		}
 	],
 	"Category": "OpenClaw",

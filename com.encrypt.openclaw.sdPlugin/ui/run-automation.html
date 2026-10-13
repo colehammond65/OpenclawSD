@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<title>OpenClaw Automation</title>
+		<script src="sdpi-components.js"></script>
+		<style>
+			:root {
+				color-scheme: dark;
+			}
+			body {
+				font-family: "Segoe UI", system-ui, sans-serif;
+				font-size: 9pt;
+				color: #d8d8d8;
+				background: #2d2d2d;
+				margin: 0;
+				padding: 10px;
+			}
+			label {
+				display: block;
+				margin: 6px 0 4px;
+				color: #969696;
+			}
+			select {
+				width: 100%;
+				box-sizing: border-box;
+				padding: 5px 6px;
+				background: #3d3d3d;
+				color: #d8d8d8;
+				border: 1px solid #4d4d4d;
+				border-radius: 4px;
+				font-size: 9pt;
+			}
+			#status {
+				margin-top: 10px;
+				padding: 8px;
+				border-radius: 4px;
+				background: #3d3d3d;
+				border-left: 3px solid #6b7280;
+				white-space: pre-wrap;
+			}
+			#status.ok {
+				border-left-color: #10b981;
+			}
+			#status.warn {
+				border-left-color: #f59e0b;
+			}
+			#status.error {
+				border-left-color: #ef4444;
+			}
+			#status.running {
+				border-left-color: #3b82f6;
+			}
+		</style>
+	</head>
+	<body>
+		<label for="job">Automation</label>
+		<select id="job"></select>
+
+		<div id="status" class="running">Reading automations…</div>
+
+		<script src="run-automation.js"></script>
+	</body>
+</html>

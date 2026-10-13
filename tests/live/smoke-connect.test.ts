@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { createGatewayConnector } from "../../src/gateway/client";
 import { DEFAULT_CONFIG, type AppConfig } from "../../src/gateway/config";
 import type { ConnectorState } from "../../src/gateway/service";
+import { GatewayService } from "../../src/gateway/service";
 
 const RUN_LIVE = process.env.RUN_LIVE === "1";
 
@@ -68,6 +69,15 @@ describe.skipIf(!RUN_LIVE)("live connect", () => {
 
 				const health = await connector.request<{ ok?: boolean }>("health", {});
 				expect(health.ok).toBe(true);
+
+				// The Run Automation path: real cron rows must survive normalisation.
+				const service = new GatewayService(connector);
+				const jobs = await service.listCronJobs();
+				for (const job of jobs) {
+					expect(job.id, `job id missing in ${JSON.stringify(job)}`).not.toBe("");
+					expect(job.name).not.toBe("");
+				}
+				console.log(`[openclaw] cron jobs: ${jobs.length} (${jobs.map((job) => `${job.name}=${job.lastRunStatus ?? "never"}`).join(", ")})`);
 			} finally {
 				connector.stop();
 				if (generated) {

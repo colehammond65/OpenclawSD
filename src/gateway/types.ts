@@ -16,24 +16,16 @@ export type SessionRow = {
 	updatedAt?: number | null;
 };
 
-/** A job from `cron.list`. */
+/** A job row from `cron.list` (fields per the Gateway's CronJob schema). */
 export type CronJobSummary = {
-	jobId: string;
-	name?: string;
-	schedule?: string;
+	id: string;
+	name: string;
+	displayName?: string;
 	enabled: boolean;
-	kind?: string;
-};
-
-/** A run record from `cron.runs`. */
-export type CronRunEntry = {
-	runId: string;
-	jobId: string;
-	status: string;
-	completionStatus?: string;
-	startedAt?: number;
-	endedAt?: number;
-	error?: string | null;
+	schedule?: { kind?: string; cron?: string; at?: string; every?: string };
+	lastRunStatus?: "ok" | "error" | "skipped";
+	lastRunAtMs?: number;
+	nextRunAtMs?: number;
 };
 
 /** Result of `usage.status`: provider quota windows. */

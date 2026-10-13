@@ -34,8 +34,10 @@ const consoleLogger: ConnectorLogger = {
 export function createGatewayConnector(config: AppConfig, log: ConnectorLogger = consoleLogger): GatewayConnector {
 	const eventListeners = new Set<(evt: { event: string; payload: unknown }) => void>();
 	const stateListeners = new Set<(state: ConnectorState) => void>();
+	let currentState: ConnectorState = { phase: "disconnected" };
 
 	function setState(next: ConnectorState): void {
+		currentState = next;
 		log.info(describeState(next));
 
 		for (const listener of [...stateListeners]) {
@@ -113,6 +115,8 @@ export function createGatewayConnector(config: AppConfig, log: ConnectorLogger =
 		},
 		onState: (cb) => {
 			stateListeners.add(cb);
+			// Replay: a subscriber that arrives after the handshake is not blind.
+			cb(currentState);
 			return () => {
 				stateListeners.delete(cb);
 			};

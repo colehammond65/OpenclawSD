@@ -3,7 +3,6 @@ import type {
 	ApprovalItem,
 	ChatSendResult,
 	CronJobSummary,
-	CronRunEntry,
 	HealthSnapshot,
 	QueueMode,
 	SessionRow,
@@ -166,15 +165,11 @@ export class GatewayService {
 		return extractRows(result, "jobs").map(normaliseJob);
 	}
 
-	async runCronJob(jobId: string, options: { waitTimeoutMs?: number } = {}): Promise<{ ok: boolean; runId?: string }> {
-		const result = await this.request<unknown>("cron.run", { jobId, ...options });
+	/** Enqueues a manual run. `force` means run now, whatever the schedule says. */
+	async runCronJob(jobId: string, options: { waitTimeoutMs?: number; mode?: "due" | "force" | "if-enabled" } = {}): Promise<{ ok: boolean; runId?: string }> {
+		const result = await this.request<unknown>("cron.run", { jobId, mode: options.mode ?? "force", ...(options.waitTimeoutMs ? { waitTimeoutMs: options.waitTimeoutMs } : {}) });
 		const record = isRecord(result) ? result : {};
 		return { ok: record.ok === true, runId: typeof record.runId === "string" ? record.runId : undefined };
-	}
-
-	async cronRunHistory(jobId: string, runId?: string): Promise<CronRunEntry[]> {
-		const result = await this.request<unknown>("cron.runs", runId ? { jobId, runId } : { jobId });
-		return extractRows(result, "runs").map(normaliseRun);
 	}
 
 	async usageStatus(): Promise<UsageStatusResult> {
@@ -298,27 +293,19 @@ function normaliseSession(value: unknown): SessionRow {
 
 function normaliseJob(value: unknown): CronJobSummary {
 	const job = isRecord(value) ? value : {};
+	const displayName = typeof job.displayName === "string" ? job.displayName : undefined;
+	const name = typeof job.name === "string" ? job.name : (displayName ?? "automation");
+	const status = job.lastRunStatus === "ok" || job.lastRunStatus === "error" || job.lastRunStatus === "skipped" ? job.lastRunStatus : undefined;
 
 	return {
-		jobId: typeof job.jobId === "string" ? job.jobId : "",
-		name: typeof job.name === "string" ? job.name : undefined,
-		schedule: typeof job.schedule === "string" ? job.schedule : undefined,
+		id: typeof job.id === "string" ? job.id : "",
+		name,
+		displayName,
 		enabled: job.enabled !== false,
-		kind: typeof job.kind === "string" ? job.kind : undefined,
-	};
-}
-
-function normaliseRun(value: unknown): CronRunEntry {
-	const run = isRecord(value) ? value : {};
-
-	return {
-		runId: typeof run.runId === "string" ? run.runId : "",
-		jobId: typeof run.jobId === "string" ? run.jobId : "",
-		status: typeof run.status === "string" ? run.status : "unknown",
-		completionStatus: typeof run.completionStatus === "string" ? run.completionStatus : undefined,
-		startedAt: typeof run.startedAt === "number" ? run.startedAt : undefined,
-		endedAt: typeof run.endedAt === "number" ? run.endedAt : undefined,
-		error: typeof run.error === "string" ? run.error : null,
+		schedule: isRecord(job.schedule) ? (job.schedule as CronJobSummary["schedule"]) : undefined,
+		lastRunStatus: status,
+		lastRunAtMs: typeof job.lastRunAtMs === "number" ? job.lastRunAtMs : undefined,
+		nextRunAtMs: typeof job.nextRunAtMs === "number" ? job.nextRunAtMs : undefined,
 	};
 }
 
