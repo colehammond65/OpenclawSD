@@ -29,6 +29,7 @@ const config = {
 		},
 		typescript({
 			mapRoot: isWatching ? "./" : undefined,
+			noEmitOnError: true,
 			exclude: ["tests/**/*"]
 		}),
 		nodeResolve({

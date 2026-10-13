@@ -7,6 +7,7 @@
         "build": "rollup -c",
         "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.encrypt.openclaw\"",
         "test": "vitest run",
+        "typecheck": "tsc --noEmit",
         "test:live": "vitest run tests/live"
     },
     "prettier": "@elgato/prettier-config",

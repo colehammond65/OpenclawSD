@@ -839,7 +839,7 @@ git commit -m "chore: finalize icons, docs, and validate full plugin"
 
 ## Execution Notes
 
-- After each task, the plugin must still build (`npm run build`) and all unit tests must pass (`npm test`); fix regressions in the task that caused them before moving on.
+- After each task, the plugin must still build (`npm run build`), type-check (`npm run typecheck`), and all unit tests must pass (`npm test`); fix regressions in the task that caused them before moving on. The rollup TypeScript plugin is configured with `noEmitOnError`, so a type error fails the build — do not rely on `npm run build` alone before Task 4 added that flag.
 - The live test (`tests/live/smoke-connect.test.ts`) and the manual device steps require the Gateway running and (for manual steps) the Stream Deck software with a device. Everything else is verifiable headlessly.
 - `.gitignore` must exclude: `node_modules/`, `com.encrypt.openclaw.sdPlugin/bin/`, `com.encrypt.openclaw.sdPlugin/logs/`, `*.local.json`. The user state file `~/.openclaw-streamdeck/config.json` is outside the repo by construction.
 - Commit each task atomically as listed; never commit secrets or the user state file.

@@ -99,12 +99,14 @@ function normaliseAuth(value: unknown): GatewayAuth {
 		return { ...DEFAULT_CONFIG.gatewayAuth };
 	}
 
-	if (value.kind === "token" && nonEmptyString(value.token)) {
-		return { kind: "token", token: value.token };
+	const token = nonEmptyString(value.token);
+	if (value.kind === "token" && token) {
+		return { kind: "token", token };
 	}
 
-	if (value.kind === "password" && nonEmptyString(value.password)) {
-		return { kind: "password", password: value.password };
+	const password = nonEmptyString(value.password);
+	if (value.kind === "password" && password) {
+		return { kind: "password", password };
 	}
 
 	return { kind: "none" };

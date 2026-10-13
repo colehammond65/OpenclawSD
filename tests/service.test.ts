@@ -10,9 +10,9 @@ function stubConnector() {
 	const connector: GatewayConnector = {
 		start: () => setState({ phase: "ready" }),
 		stop: () => setState({ phase: "disconnected" }),
-		request: async (method: string, params?: unknown) => {
+		request: async <T,>(method: string, params?: unknown): Promise<T> => {
 			requests.push([method, params]);
-			return {};
+			return {} as T;
 		},
 		onEvent: (cb) => {
 			eventListeners.push(cb);
