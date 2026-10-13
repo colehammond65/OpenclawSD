@@ -81,6 +81,22 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		{
+			"Name": "Send Prompt",
+			"UUID": "com.encrypt.openclaw.send-prompt",
+			"Icon": "imgs/actions/send-prompt/icon",
+			"Tooltip": "Sends a fixed prompt to an OpenClaw session.",
+			"PropertyInspectorPath": "ui/send-prompt.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/send-prompt/key",
+					"TitleAlignment": "middle"
+				}
+			]
 		}
 	],
 	"Category": "OpenClaw",

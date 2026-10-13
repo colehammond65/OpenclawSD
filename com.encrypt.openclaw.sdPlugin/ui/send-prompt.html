@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<title>OpenClaw Prompt</title>
+		<script src="sdpi-components.js"></script>
+		<style>
+			:root {
+				color-scheme: dark;
+			}
+			body {
+				font-family: "Segoe UI", system-ui, sans-serif;
+				font-size: 9pt;
+				color: #d8d8d8;
+				background: #2d2d2d;
+				margin: 0;
+				padding: 10px;
+			}
+			label {
+				display: block;
+				margin: 8px 0 4px;
+				color: #969696;
+			}
+			input,
+			select,
+			textarea {
+				width: 100%;
+				box-sizing: border-box;
+				padding: 5px 6px;
+				background: #3d3d3d;
+				color: #d8d8d8;
+				border: 1px solid #4d4d4d;
+				border-radius: 4px;
+				font-size: 9pt;
+				font-family: inherit;
+			}
+			textarea {
+				min-height: 74px;
+				resize: vertical;
+			}
+			.hint {
+				color: #8a8a8a;
+				font-size: 8pt;
+				margin-top: 4px;
+			}
+		</style>
+	</head>
+	<body>
+		<label for="session">Session</label>
+		<select id="session"></select>
+		<input id="sessionKey" type="text" spellcheck="false" placeholder="or type a session key" />
+
+		<label for="queueMode">If the session is busy</label>
+		<select id="queueMode">
+			<option value="followup">Queue after the current run</option>
+			<option value="steer">Steer the current run</option>
+			<option value="collect">Collect</option>
+			<option value="interrupt">Interrupt</option>
+		</select>
+
+		<label for="prompt">Prompt</label>
+		<textarea id="prompt" spellcheck="false" placeholder="What should OpenClaw do?"></textarea>
+		<div class="hint">Press the key to send it. The key shows Sent or Failed.</div>
+
+		<script src="send-prompt.js"></script>
+	</body>
+</html>
