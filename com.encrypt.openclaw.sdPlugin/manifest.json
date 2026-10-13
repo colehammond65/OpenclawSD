@@ -112,6 +112,21 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		{
+			"Name": "Stop",
+			"UUID": "com.encrypt.openclaw.stop",
+			"Icon": "imgs/actions/stop/icon",
+			"Tooltip": "Aborts the OpenClaw run in flight.",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/stop/key",
+					"TitleAlignment": "middle"
+				}
+			]
 		}
 	],
 	"Category": "OpenClaw",
