@@ -1,0 +1,5 @@
+node_modules/
+com.encrypt.openclaw.sdPlugin/bin/
+com.encrypt.openclaw.sdPlugin/logs/
+.superpowers/
+*.local.json
