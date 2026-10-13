@@ -137,7 +137,9 @@ checked and overridden.
 - **Scopes** `operator.read`, `operator.write`, `operator.approvals`.
 - **Default Gateway URL** `ws://127.0.0.1:18789`, overridable in global settings.
 - **Secrets** (Ed25519 device private key, issued device token, optional shared
-  Gateway token) live in **global settings**, never action settings.
+  Gateway token) live in `~/.openclaw-streamdeck/config.json`, never action
+  settings. (File-backed rather than global settings because the
+  `GatewayClient` host deps are synchronous.)
 - **Language/build**: TypeScript + Rollup, exactly as the scaffold produces.
 - **Local install only** in v1.
 - **v1 action set** listed below.
@@ -153,7 +155,8 @@ One Node process (the plugin). Layers:
   params)` helper, event fan-out, and small cached snapshots (health,
   sessions/roster, cron jobs, usage).
   - `identity.ts` — generate/persist the Ed25519 device identity, sign the
-    challenge payload, store/read the device token. (Global-settings-backed.)
+    challenge payload, store/read the device token. (File-backed;
+    `~/.openclaw-streamdeck/config.json`.)
   - `events.ts` — publish/subscribe for the action layer.
 - `src/actions/` — one class per action, each subscribing to the events it
   needs and updating only its own visible instances
