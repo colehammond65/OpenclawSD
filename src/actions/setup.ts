@@ -7,8 +7,7 @@ import streamDeck, {
 } from "@elgato/streamdeck";
 import type { JsonObject, JsonValue } from "@elgato/utils";
 
-import { gatewayService } from "../gateway";
-import { createGatewayConnector } from "../gateway/client";
+import { gatewayService, createLoggedConnector } from "../gateway";
 import { configDir, loadConfig, saveConfig, type AppConfig, type GatewayAuth } from "../gateway/config";
 import type { ConnectorState } from "../gateway/service";
 import { imageForStatus, kindFromPhase, statusTitle } from "../lib/deck";
@@ -76,7 +75,7 @@ export class Setup extends SingletonAction<JsonObject> {
 		saveConfig(stored);
 
 		// Apply immediately: no plugin restart needed for the new settings.
-		gatewayService.replaceConnector(createGatewayConnector(config));
+		gatewayService.replaceConnector(createLoggedConnector(config));
 
 		for (const action of this.actions) {
 			if (action.isKey()) {
@@ -93,7 +92,7 @@ export class Setup extends SingletonAction<JsonObject> {
 			return { kind: "test-result", ok: false, phase: "error", detail: "Gateway URL must start with ws:// or wss://" };
 		}
 
-		const probe = createGatewayConnector(config);
+		const probe = createLoggedConnector(config);
 		let state: ConnectorState = { phase: "disconnected" };
 		const off = probe.onState((next) => {
 			state = next;

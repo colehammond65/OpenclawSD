@@ -25,7 +25,8 @@
 			"Icon": "imgs/actions/status/icon",
 			"Tooltip": "Shows OpenClaw Gateway health and active runs.",
 			"Controllers": [
-				"Keypad"
+				"Keypad",
+				"Encoder"
 			],
 			"States": [
 				{

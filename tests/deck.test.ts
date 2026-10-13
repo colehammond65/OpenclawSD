@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { imageForStatus, kindFromHealth, kindFromPhase, statusTitle } from "../src/lib/deck";
+import { activeRunCount, imageForStatus, kindFromHealth, kindFromPhase, statusTitle } from "../src/lib/deck";
+import type { SessionRow } from "../src/gateway/types";
 
 describe("deck rendering", () => {
 	it("maps status kinds to shipped images", () => {
@@ -26,5 +27,16 @@ describe("deck rendering", () => {
 		expect(kindFromPhase("pairing")).toBe("warn");
 		expect(kindFromPhase("error")).toBe("error");
 		expect(kindFromPhase("disconnected")).toBe("neutral");
+	});
+
+	it("counts only sessions with an active run", () => {
+		const rows: SessionRow[] = [
+			{ key: "a", hasActiveRun: true },
+			{ key: "b", hasActiveRun: false },
+			{ key: "c", hasActiveRun: true },
+		];
+
+		expect(activeRunCount(rows)).toBe(2);
+		expect(activeRunCount([])).toBe(0);
 	});
 });

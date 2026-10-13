@@ -12,16 +12,32 @@ import type { ConnectorState, GatewayConnector } from "./service";
 const CLIENT_VERSION = "0.1.0";
 const SCOPES = ["operator.read", "operator.write", "operator.approvals"];
 
+/** Where the connector reports connection progress. */
+export type ConnectorLogger = {
+	debug(message: string): void;
+	info(message: string): void;
+	error(message: string): void;
+};
+
+/** Used when the caller does not supply a logger (tests, scripts). */
+const consoleLogger: ConnectorLogger = {
+	debug: () => {},
+	info: (message) => console.log(`[openclaw] ${message}`),
+	error: (message) => console.error(`[openclaw] ${message}`),
+};
+
 /**
  * The production transport: a `GatewayClient` wired to our stored device
  * identity and device token. The client owns connection lifecycle and retry
  * policy; this adapter only translates its callbacks into `ConnectorState`.
  */
-export function createGatewayConnector(config: AppConfig): GatewayConnector {
+export function createGatewayConnector(config: AppConfig, log: ConnectorLogger = consoleLogger): GatewayConnector {
 	const eventListeners = new Set<(evt: { event: string; payload: unknown }) => void>();
 	const stateListeners = new Set<(state: ConnectorState) => void>();
 
 	function setState(next: ConnectorState): void {
+		log.info(describeState(next));
+
 		for (const listener of [...stateListeners]) {
 			listener(next);
 		}
@@ -47,12 +63,8 @@ export function createGatewayConnector(config: AppConfig): GatewayConnector {
 				saveConfig(stored);
 			}
 		},
-		logDebug: (message) => {
-			if (process.env.OPENCLAW_SD_DEBUG === "1") {
-				console.log(`[openclaw] ${message}`);
-			}
-		},
-		logError: (message) => console.error(`[openclaw] ${message}`),
+		logDebug: (message) => log.debug(message),
+		logError: (message) => log.error(message),
 		redactForLog: (message) => redact(message, config),
 	};
 
@@ -145,6 +157,22 @@ function logConnected(hello: { server?: { version?: string }; auth?: unknown }):
 	const auth = isRecord(hello.auth) ? hello.auth : {};
 	const scopes = Array.isArray(auth.scopes) ? auth.scopes.join(", ") : "unknown";
 	console.log(`[openclaw] connected to Gateway ${hello.server?.version ?? "unknown"} (scopes: ${scopes})`);
+}
+
+/** One line per connection state change, for the plugin log. */
+function describeState(state: ConnectorState): string {
+	switch (state.phase) {
+		case "ready":
+			return `connected (Gateway ${state.detail ?? "unknown"})`;
+		case "pairing":
+			return `pairing required (${state.detail ?? "waiting for approval"})`;
+		case "connecting":
+			return "connecting";
+		case "error":
+			return `error: ${state.detail ?? "unknown"}`;
+		default:
+			return state.detail ? `disconnected: ${state.detail}` : "disconnected";
+	}
 }
 
 function redact(message: string, config: AppConfig): string {

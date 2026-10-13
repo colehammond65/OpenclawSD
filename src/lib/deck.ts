@@ -1,5 +1,5 @@
 import type { ConnectorPhase } from "../gateway/service";
-import type { HealthSnapshot } from "../gateway/types";
+import type { HealthSnapshot, SessionRow } from "../gateway/types";
 
 /** The five faces a key can show. */
 export type StatusKind = "neutral" | "ok" | "warn" | "error" | "running";
@@ -29,6 +29,11 @@ export function kindFromHealth(health: HealthSnapshot | null, connected: boolean
 	}
 
 	return "ok";
+}
+
+/** How many sessions currently have a run in flight. */
+export function activeRunCount(rows: SessionRow[]): number {
+	return rows.filter((row) => row.hasActiveRun).length;
 }
 
 /** Connection lifecycle as a face: not-yet-configured is neutral, not an error. */

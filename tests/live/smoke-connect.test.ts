@@ -26,9 +26,13 @@ describe.skipIf(!RUN_LIVE)("live connect", () => {
 	it(
 		"becomes ready and answers sessions.list and health",
 		async () => {
-			// Never touch the real state file.
-			const sandbox = mkdtempSync(join(tmpdir(), "openclaw-sd-live-"));
-			process.env.OPENCLAW_SD_CONFIG_DIR = sandbox;
+			// Defaults to a throwaway state dir; set OPENCLAW_SD_CONFIG_DIR to
+			// exercise the real stored identity and device token instead.
+			const generated = !process.env.OPENCLAW_SD_CONFIG_DIR;
+			const sandbox = generated ? mkdtempSync(join(tmpdir(), "openclaw-sd-live-")) : "";
+			if (generated) {
+				process.env.OPENCLAW_SD_CONFIG_DIR = sandbox;
+			}
 
 			const connector = createGatewayConnector(testConfig());
 			let state: ConnectorState = { phase: "disconnected" };
@@ -66,8 +70,10 @@ describe.skipIf(!RUN_LIVE)("live connect", () => {
 				expect(health.ok).toBe(true);
 			} finally {
 				connector.stop();
-				rmSync(sandbox, { recursive: true, force: true });
-				delete process.env.OPENCLAW_SD_CONFIG_DIR;
+				if (generated) {
+					rmSync(sandbox, { recursive: true, force: true });
+					delete process.env.OPENCLAW_SD_CONFIG_DIR;
+				}
 			}
 		},
 		60_000,
