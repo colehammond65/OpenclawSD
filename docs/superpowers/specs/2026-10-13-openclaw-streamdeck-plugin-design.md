@@ -15,7 +15,8 @@ document is the agreed description of what gets built.
 - Keys (and dials where they earn their place) that trigger OpenClaw work.
 - Live feedback on the deck: Gateway reachability, running work, pending
   approvals, provider usage / cost.
-- One-time setup, no hand-editing of `openclaw.json` to mint credentials.
+- One-time guided setup — a first-run wizard in v1 — with no hand-editing of
+  `openclaw.json` to mint credentials.
 - Ships as a normal Stream Deck plugin: `*.sdPlugin` folder, TypeScript, built
   with the standard scaffold.
 
@@ -131,7 +132,7 @@ checked and overridden.
   rather than HTTP hooks or CLI shell-outs. Only the socket gives live events
   (approval badges, run state, usage) with low latency — which is the whole
   point of the status half of the product.
-- **Plugin UUID `com.colehammond.openclaw`**, display name "OpenClaw". Action
+- **Plugin UUID `com.encrypt.openclaw`**, display name "OpenClaw". Action
   UUIDs are prefixed with it.
 - **Scopes** `operator.read`, `operator.write`, `operator.approvals`.
 - **Default Gateway URL** `ws://127.0.0.1:18789`, overridable in global settings.
@@ -175,6 +176,19 @@ loopback this may auto-approve and never be seen.
 
 ## v1 actions
 
+The plugin ships a **Setup** action plus six control actions.
+
+**Setup** (Key). First-run onboarding wizard, and afterwards a connection light.
+Its property inspector walks through: Gateway URL (defaulted to
+`ws://127.0.0.1:18789`) with a **Test connection** step; optional shared
+token/password; automatic device-identity generation; then the pairing step —
+if the Gateway returns `PAIRING_REQUIRED` the wizard shows the exact
+`openclaw devices approve <requestId>` command with a Copy button and keeps
+retrying until approved; then a done state showing the negotiated role, scopes,
+and Gateway version. The key face mirrors the state: Needs setup / Connecting /
+Pairing / Ready / Error. Every other action's property inspector shows a
+"not configured — open Setup" banner until this completes.
+
 1. **Run Automation** (Key + Encoder). Settings: which cron job (populated live
    from `cron.list`). Press = `cron.run`. Key shows idle / running / ok / failed,
    driven by `cron` events plus `cron.runs` for the returned `runId`. Dial
@@ -199,8 +213,8 @@ loopback this may auto-approve and never be seen.
 ## Phasing
 
 - **Phase 0 (riskiest first):** scaffold; `GatewayService` connect + handshake +
-  device identity + pairing UX; the **Status** key. This proves auth and
-  reconnect end-to-end.
+  device identity; the **Setup** wizard and its key; then the **Status** key.
+  This proves auth, pairing, and reconnect end-to-end.
 - **Phase 1:** **Run Automation** + **Usage** (the two things Cole named).
 - **Phase 2:** **Send Prompt**, **Approvals**, **Stop**.
 - **Phase 3:** dial layouts, icons, polish.
@@ -258,10 +272,11 @@ document alone.
 - **Approvals is Key + Encoder.** Dial push = approve, long touch = deny; the key
   variant approves on press and denies on long-press (a key-up timer). One action
   with `Controllers: ["Keypad", "Encoder"]`.
-- **First-run onboarding is not a v1 deliverable.** v1 ships an editable property
-  inspector (Gateway URL + auth fields) that also *displays* live connection and
-  pairing state, with a copy button for the
-  `openclaw devices approve <requestId>` command. No guided wizard.
+- **First-run onboarding IS a v1 deliverable.** The **Setup** action's property
+  inspector hosts the wizard described under v1 actions; it writes configuration
+  and secrets to global settings and *displays* live connection and pairing
+  state, with a Copy button for the `openclaw devices approve <requestId>`
+  command. The wizard is self-contained HTML/JS, no framework.
 - **`presence` is not Gateway liveness.** It reports connected operator/node
   *devices*. Gateway reachability is the socket's own connected state plus the
   `health` RPC; `presence` is shown only as a secondary "who's connected" readout.
