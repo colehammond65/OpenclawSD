@@ -201,14 +201,13 @@ loopback this may auto-approve and never be seen.
 The plugin ships six control actions. There is no separate setup action: the
 connection is configured from a panel the actions share.
 
-**Connection setup.** The manifest declares a plugin-level
-`PropertyInspectorPath` (`ui/connection.html`) and `DefaultWindowSize`
-(`[560, 760]`), so every action that does not declare an inspector of its own —
-Status, Approvals, Stop — shows a compact connection panel: the live phase, the
-Gateway URL and authentication in use, the device id and config path, a **Test
-connection** button, and **Open setup window…**. The three actions that do have
-their own settings (Run Automation, Send Prompt, Usage) carry the same button.
-It opens `ui/setup.html` with `window.open(...)`, and the wizard walks through:
+**Connection setup.** Each of Status, Approvals and Stop declares
+`PropertyInspectorPath: "ui/connection.html"` **per action**, so it shows a
+compact connection panel: the live phase, the Gateway URL and authentication in
+use, the device id and config path, a **Test connection** button, and **Open
+setup window…**. The three actions that do have their own settings (Run
+Automation, Send Prompt, Usage) carry the same button. It opens `ui/setup.html`
+with `window.open(...)`, and the wizard walks through:
 Gateway URL (defaulted to `ws://127.0.0.1:18789`) with a **Test connection**
 step; optional shared token/password; automatic device-identity generation; then
 the pairing step — if the Gateway returns `PAIRING_REQUIRED` the wizard shows the
@@ -233,8 +232,9 @@ wizard is open.
    queue mode). Press = `chat.send`. Brief flash, then ok / error; no transcript.
 3. **Status** (Key + Encoder). Reachability from the socket state + `health`
    (not `presence`, which reports connected devices); plus active-run count from
-   `sessions.list { activeOnly: true }`. Key is red/green; dial feedback shows
-   active runs and Gateway uptime.
+   `sessions.list { activeOnly: true }`. Key is red/green; dial feedback (`$B2`,
+   declared in the manifest and set at runtime) shows active runs and Gateway
+   uptime.
 4. **Usage** (Key + Encoder). `usage.status` quota windows ("X% left") and
    `usage.cost`. Key shows the worst-remaining window; dial renders a `$B1`
    gauge with cost in the title.
@@ -308,9 +308,11 @@ document alone.
 - **Approvals is Key + Encoder.** Dial push = approve, long touch = deny; the key
   variant approves on press and denies on long-press (a key-up timer). One action
   with `Controllers: ["Keypad", "Encoder"]`.
-- **First-run onboarding IS a v1 deliverable.** It is a plugin-level connection
-  panel plus a wizard window rather than a dedicated action, so nothing extra has
-  to be placed on the deck beyond any OpenClaw action. It writes configuration
+- **First-run onboarding IS a v1 deliverable.** It is a connection panel shared
+  by the actions plus a wizard window rather than a dedicated action, so nothing
+  extra has to be placed on the deck beyond any OpenClaw action. `DefaultWindowSize`
+  (`[560, 760]`) stays plugin-level: it sizes the wizard window, which the panel
+  opens with `window.open`. It writes configuration
   and secrets to `~/.openclaw-streamdeck/config.json` — **not** global settings,
   which the Gateway client's host deps cannot read synchronously — and *displays*
   live connection and pairing state, with a Copy button for the
@@ -319,6 +321,16 @@ document alone.
 - **`presence` is not Gateway liveness.** It reports connected operator/node
   *devices*. Gateway reachability is the socket's own connected state plus the
   `health` RPC; `presence` is shown only as a secondary "who's connected" readout.
+- **Property inspectors are declared per action, not at plugin level.** The app
+  (7.6) crashed in `Qt6Core` while creating the plugin-level inspector for Status
+  — the action that was also the only action in any installed plugin to declare
+  the `Encoder` controller with no `Encoder` block. Both anomalies are gone:
+  every action now declares `PropertyInspectorPath` itself, and Status declares
+  `Encoder.layout` (`$B2`, the layout its dial feedback already sets at runtime).
+  Every other installed plugin declares inspectors per action. The crash did not
+  reproduce afterwards, but it had also stopped reproducing before the change, so
+  this is a hardening fix, not a proven root cause. `DefaultWindowSize` stays
+  plugin-level: it sizes the wizard window, not a panel.
 
 ## Left to the builder
 

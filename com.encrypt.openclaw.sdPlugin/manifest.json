@@ -8,10 +8,14 @@
 			"UUID": "com.encrypt.openclaw.status",
 			"Icon": "imgs/actions/status/icon",
 			"Tooltip": "Shows OpenClaw Gateway health and active runs.",
+			"PropertyInspectorPath": "ui/connection.html",
 			"Controllers": [
 				"Keypad",
 				"Encoder"
 			],
+			"Encoder": {
+				"layout": "$B2"
+			},
 			"States": [
 				{
 					"Image": "imgs/actions/status/key",
@@ -87,6 +91,7 @@
 			"UUID": "com.encrypt.openclaw.approvals",
 			"Icon": "imgs/actions/approvals/icon",
 			"Tooltip": "Approve or deny OpenClaw exec approvals. Press to allow once, hold to deny.",
+			"PropertyInspectorPath": "ui/connection.html",
 			"Controllers": [
 				"Keypad",
 				"Encoder"
@@ -111,6 +116,7 @@
 			"UUID": "com.encrypt.openclaw.stop",
 			"Icon": "imgs/actions/stop/icon",
 			"Tooltip": "Aborts the OpenClaw run in flight.",
+			"PropertyInspectorPath": "ui/connection.html",
 			"Controllers": [
 				"Keypad"
 			],
@@ -124,7 +130,6 @@
 	],
 	"Category": "OpenClaw",
 	"CategoryIcon": "imgs/plugin/category-icon",
-	"PropertyInspectorPath": "ui/connection.html",
 	"DefaultWindowSize": [
 		560,
 		760

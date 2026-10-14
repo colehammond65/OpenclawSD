@@ -18,6 +18,18 @@ Today the first-run wizard is a **property inspector belonging to a `Setup` acti
 
 The sidebar panel stays compact: state, a summary of the saved connection, **Test connection**, **Open setup window**.
 
+> **Shipped deviation (2026-10-14).** The plugin-level inspector described in
+> this plan was replaced by a per-action declaration before release:
+> `PropertyInspectorPath: "ui/connection.html"` is now set on Status, Approvals
+> and Stop individually, and the plugin-level key was removed. Reason: the Stream
+> Deck app crashed (`Qt6Core`, `0xc0000409`) while creating that inspector for
+> Status, and Status was also the only action in any installed plugin declaring
+> the `Encoder` controller with no `Encoder` block — it now declares
+> `Encoder.layout: "$B2"`. Every other installed plugin declares inspectors per
+> action. `DefaultWindowSize` stayed plugin-level, as the plan requires.
+> `src/setup/handler.ts` is unchanged: it was already registered globally, not on
+> an action, so nothing about the message handling moved.
+
 ## 2. Verified facts
 
 Checked against the pinned SDK, the published manifest JSON schema, and plugins installed on this machine — not assumed:
