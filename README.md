@@ -117,6 +117,34 @@ identity, then checks `sessions.list`, `cron.list`, `usage.status`,
 `OPENCLAW_SD_TEST_TOKEN` to exercise the shared-token path, and
 `OPENCLAW_SD_CONFIG_DIR` to run it against your real stored identity.
 
+### Verifying the property inspectors
+
+```powershell
+npm run verify:panels
+```
+
+The Stream Deck app only wires a property inspector it manages, so the panels
+cannot be exercised by loading them in a browser. Instead this drives the app's
+**own** embedded browser over the DevTools protocol (`127.0.0.1:23654`, override
+with `SD_CDP`): it loads each panel's real HTML and CSS, re-runs its real scripts
+against a stubbed Stream Deck bridge, and then drives every message by hand —
+rendering for the ready/pairing/error states, the Test connection request, the
+setup window opening as a real window, the relay in both directions, Save
+carrying the form values, and foreign payloads *not* being relayed.
+
+It needs the app running and the plugin linked. It reuses one spare page target
+(because QtWebEngine refuses to create pages over HTTP) and restores it to
+`about:blank` afterwards. `tools/cdp.mjs` is the underlying client and is also
+usable on its own:
+
+```powershell
+node tools/cdp.mjs list
+node tools/cdp.mjs eval "OpenClaw Automation" "document.body.innerText"
+```
+
+What it cannot check is anything the app itself owns: the window's actual
+`DefaultWindowSize`, and the real inspector being served for a given action.
+
 ## Not in v1
 
 No chat transcript, no device pairing administration, no remote-Gateway fleet

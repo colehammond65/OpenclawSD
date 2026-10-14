@@ -9,7 +9,8 @@
         "test": "vitest run",
         "typecheck": "tsc --noEmit",
         "icons": "node scripts/gen-icons.mjs",
-        "test:live": "vitest run tests/live"
+        "test:live": "vitest run tests/live",
+        "verify:panels": "node tools/verify-panels.mjs"
     },
     "prettier": "@elgato/prettier-config",
     "devDependencies": {
