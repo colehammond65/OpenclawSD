@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<title>OpenClaw connection</title>
+		<script src="sdpi-components.js"></script>
+		<style>
+			:root { color-scheme: dark; }
+			body { font-family: "Segoe UI", system-ui, sans-serif; font-size: 9pt; color: #d8d8d8; background: #2d2d2d; margin: 0; padding: 10px; }
+			h1 { font-size: 9pt; color: #969696; margin: 0 0 8px; font-weight: 600; }
+			.row { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; border-bottom: 1px solid #3d3d3d; }
+			.row span:last-child { color: #fff; text-align: right; overflow-wrap: anywhere; }
+			.muted { color: #8a8a8a; }
+			button { width: 100%; margin-top: 8px; padding: 6px; background: #3d3d3d; color: #d8d8d8; border: 1px solid #4d4d4d; border-radius: 4px; font-size: 9pt; }
+			button:hover { background: #4d4d4d; }
+			#status { margin-top: 8px; padding: 8px; border-radius: 4px; background: #3d3d3d; border-left: 3px solid #6b7280; white-space: pre-wrap; }
+			#status.ok { border-left-color: #10b981; }
+			#status.warn { border-left-color: #f59e0b; }
+			#status.error { border-left-color: #ef4444; }
+			#status.running { border-left-color: #3b82f6; }
+			#pairing { margin-top: 8px; }
+			#pairing.hidden { display: none; }
+			code { display: block; background: #262626; padding: 6px; border-radius: 4px; margin: 4px 0; overflow-wrap: anywhere; }
+			#meta { margin-top: 8px; color: #8a8a8a; font-size: 8pt; white-space: pre-wrap; overflow-wrap: anywhere; }
+		</style>
+	</head>
+	<body>
+		<h1>OpenClaw connection</h1>
+		<div class="row"><span>Gateway</span><span id="url">—</span></div>
+		<div class="row"><span>Auth</span><span id="auth">—</span></div>
+		<div id="status" class="running">Reading connection…</div>
+
+		<div id="pairing" class="hidden">
+			<div class="muted">Approve this device on the Gateway host:</div>
+			<code id="approve">openclaw devices approve &lt;requestId&gt;</code>
+			<button id="copy">Copy command</button>
+		</div>
+
+		<button id="test">Test connection</button>
+		<button id="openSetup">Open setup window…</button>
+
+		<div id="meta"></div>
+
+		<script src="connection.js"></script>
+		<script src="connection-bar.js"></script>
+	</body>
+</html>

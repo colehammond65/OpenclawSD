@@ -8,6 +8,7 @@ Plugin UUID: `com.encrypt.openclaw`.
 
 Design: `docs/superpowers/specs/2026-10-13-openclaw-streamdeck-plugin-design.md`
 Plan: `docs/superpowers/plans/2026-10-13-openclaw-streamdeck-plugin.md`
+Setup window: `docs/superpowers/plans/2026-10-14-openclaw-streamdeck-setup-window.md`
 
 ## Prerequisites
 
@@ -36,27 +37,36 @@ The plugin then appears under the **OpenClaw** category. Remove it with
 
 ## First run
 
-1. Drag **Setup** onto a key and open its settings panel.
-2. Enter the Gateway URL (default `ws://127.0.0.1:18789`).
-3. Choose the authentication the Gateway is running with:
+1. Place any OpenClaw action on the deck — **Status** is the natural one — and
+   select it so its settings panel opens on the right. (The Stream Deck app has
+   no plugin-settings page, so one OpenClaw action has to be on the deck before
+   the connection can be configured.)
+2. Press **Open setup window…**. The wizard opens in its own window.
+3. Enter the Gateway URL (default `ws://127.0.0.1:18789`).
+4. Choose the authentication the Gateway is running with:
    - **None** — the Gateway was started with `--auth none`.
    - **Shared token** — the default. Paste the token (`openclaw gateway
      auth-token` reveals the configured one; `openclaw config set
      gateway.auth.token <token>` sets a stable one).
    - **Password** — when the Gateway uses `gateway.auth.mode=password`.
-4. **Save + test connection**. The key face follows the state: `Not connected`,
-   `Connecting`, `PAIR`, `Ready`, `Error`.
+5. **Save + test connection**. The Status key then follows the state: `OK`,
+   `BUSY`, `PAIR`, `DOWN`.
 
-If the Gateway asks for approval, the panel shows the exact commands to run on
-the Gateway host (`openclaw devices list`, then `openclaw devices approve
-<requestId>`) with a Copy button. On a loopback connection the Gateway
-auto-approves, so this is usually only seen for remote Gateways.
+The sidebar panel shows the live state, the URL and authentication in use, a
+**Test connection** button, and the same **Open setup window…** button. It
+appears for **Status**, **Approvals** and **Stop** (the actions with no settings
+of their own); **Run Automation**, **Send Prompt** and **Usage** keep their own
+settings and carry the button too.
+
+If the Gateway asks for approval, the window shows the exact command to run on
+the Gateway host (`openclaw devices approve <requestId>`) with a Copy button. On
+a loopback connection the Gateway auto-approves, so this is usually only seen for
+remote Gateways.
 
 ## Actions
 
 | Action | What it does |
 | --- | --- |
-| **Setup** | Onboarding wizard and connection light. |
 | **Status** | Red when the Gateway is unreachable, green when healthy, blue with an active-run count while work is in flight. |
 | **Run Automation** | Runs a chosen automation immediately (`cron.run`), and shows that job's last outcome. |
 | **Usage** | Worst provider quota window, or today's spend when there is no quota (local models have none). |
@@ -64,8 +74,9 @@ auto-approves, so this is usually only seen for remote Gateways.
 | **Approvals** | Lights up on an exec approval request. Short press approves once, long press (>700 ms) denies. |
 | **Stop** | Aborts the run in flight (`sessions.abort`), targeting the busiest session. |
 
-Dials (Stream Deck + / + XL) are implemented for Status, Run Automation and
-Usage; they are inert on decks without encoders (for example a Stream Deck Neo).
+Dials (Stream Deck + / + XL) are implemented for Status, Run Automation, Usage
+and Approvals; they are inert on decks without encoders (for example a Stream
+Deck Neo).
 
 ## Where state lives
 
@@ -80,10 +91,10 @@ travel with exported profiles. Override the location with the
 | Symptom | Cause and fix |
 | --- | --- |
 | Key shows `DOWN` | The Gateway is not reachable. Start it, then check `openclaw gateway status --require-rpc`. |
-| Key shows `PAIR` | The Gateway wants this device approved: `openclaw devices approve <requestId>` (the Setup panel shows it). |
-| `unauthorized: gateway token mismatch` | The token in Setup does not match the Gateway's. Re-copy it, or start the Gateway with `--auth none` and choose **None**. |
+| Key shows `PAIR` | The Gateway wants this device approved: `openclaw devices approve <requestId>` (the connection panel shows it). |
+| `unauthorized: gateway token mismatch` | The token in the setup window does not match the Gateway's. Re-copy it, or start the Gateway with `--auth none` and choose **None**. |
 | `device metadata change pending approval` | The plugin's requested scopes or caps changed since it was paired. Approve the device again. |
-| Nothing updates | Re-open **Setup** to confirm `Ready`; usage and cost refresh at most once per 30 s. |
+| Nothing updates | Open the connection panel (**Status**, **Approvals** or **Stop**) and press **Test connection**; usage and cost refresh at most once per 30 s. |
 | Plugin will not start after `link` | Run `npx @elgato/cli dev`, then restart the plugin — the app caches its plugin registry. |
 
 Plugin logs: `com.encrypt.openclaw.sdPlugin/logs/`. Gateway connection state is

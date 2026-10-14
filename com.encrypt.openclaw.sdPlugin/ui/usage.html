@@ -37,6 +37,19 @@
 			.muted {
 				color: #8a8a8a;
 			}
+			button {
+				width: 100%;
+				margin-top: 8px;
+				padding: 6px;
+				background: #3d3d3d;
+				color: #d8d8d8;
+				border: 1px solid #4d4d4d;
+				border-radius: 4px;
+				font-size: 9pt;
+			}
+			button:hover {
+				background: #4d4d4d;
+			}
 		</style>
 	</head>
 	<body>
@@ -46,6 +59,9 @@
 		<div class="row"><span id="windowLabel">Spend (30 days)</span><span class="value" id="window">—</span></div>
 		<div id="providers"></div>
 
+		<button id="openSetup">Open setup window…</button>
+
 		<script src="usage.js"></script>
+		<script src="connection-bar.js"></script>
 	</body>
 </html>

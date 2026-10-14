@@ -43,6 +43,19 @@
 				font-size: 8pt;
 				margin-top: 4px;
 			}
+			button {
+				width: 100%;
+				margin-top: 8px;
+				padding: 6px;
+				background: #3d3d3d;
+				color: #d8d8d8;
+				border: 1px solid #4d4d4d;
+				border-radius: 4px;
+				font-size: 9pt;
+			}
+			button:hover {
+				background: #4d4d4d;
+			}
 		</style>
 	</head>
 	<body>
@@ -62,6 +75,9 @@
 		<textarea id="prompt" spellcheck="false" placeholder="What should OpenClaw do?"></textarea>
 		<div class="hint">Press the key to send it. The key shows Sent or Failed.</div>
 
+		<button id="openSetup">Open setup window…</button>
+
 		<script src="send-prompt.js"></script>
+		<script src="connection-bar.js"></script>
 	</body>
 </html>
