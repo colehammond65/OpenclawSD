@@ -321,16 +321,22 @@ document alone.
 - **`presence` is not Gateway liveness.** It reports connected operator/node
   *devices*. Gateway reachability is the socket's own connected state plus the
   `health` RPC; `presence` is shown only as a secondary "who's connected" readout.
-- **Property inspectors are declared per action, not at plugin level.** The app
-  (7.6) crashed in `Qt6Core` while creating the plugin-level inspector for Status
-  — the action that was also the only action in any installed plugin to declare
-  the `Encoder` controller with no `Encoder` block. Both anomalies are gone:
-  every action now declares `PropertyInspectorPath` itself, and Status declares
-  `Encoder.layout` (`$B2`, the layout its dial feedback already sets at runtime).
-  Every other installed plugin declares inspectors per action. The crash did not
-  reproduce afterwards, but it had also stopped reproducing before the change, so
-  this is a hardening fix, not a proven root cause. `DefaultWindowSize` stays
-  plugin-level: it sizes the wizard window, not a panel.
+- **Property inspectors are declared per action.** Every action declares its own
+  `PropertyInspectorPath` (Status/Approvals/Stop → `ui/connection.html`) rather
+  than relying on a plugin-level one, and `Status` declares
+  `Encoder.layout: "$B2"` (the layout its dial feedback sets at runtime). These
+  match what every other installed plugin does. They were originally made while
+  chasing a Stream Deck crash; they are hygiene, **not** a fix for it.
+  `DefaultWindowSize` stays plugin-level: it sizes the wizard window, not a
+  panel.
+- **Stream Deck 7.6 has a crash that a plugin restart can arm.** If a plugin is
+  restarted (deep link, update, or the app's own restart path) and then one of
+  its panels is opened again **in the same app session**, the app dies with a
+  null dereference in its UI thread while creating the panel — before the page
+  loads, so nothing in the page, manifest or plugin process is involved. Stream
+  Deck 7.6.0.23012, reproducible, reported to Elgato. Workaround: restart the
+  Stream Deck app after restarting or updating the plugin. Full evidence,
+  repro and the report draft: `docs/streamdeck-7.6-property-inspector-crash.md`.
 
 ## Left to the builder
 

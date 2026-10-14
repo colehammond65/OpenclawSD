@@ -96,6 +96,7 @@ travel with exported profiles. Override the location with the
 | `device metadata change pending approval` | The plugin's requested scopes or caps changed since it was paired. Approve the device again. |
 | Nothing updates | Open the connection panel (**Status**, **Approvals** or **Stop**) and press **Test connection**; usage and cost refresh at most once per 30 s. |
 | Plugin will not start after `link` | Run `npx @elgato/cli dev`, then restart the plugin — the app caches its plugin registry. |
+| **The Stream Deck app crashes when a panel is opened** | Known Stream Deck 7.6 bug, not this plugin: if the plugin was restarted (or updated) earlier **in the same app session**, opening one of its panels kills the app (null dereference while creating the view — before the page loads). Fix: restart the Stream Deck app after restarting/updating the plugin. Evidence and repro: `docs/streamdeck-7.6-property-inspector-crash.md`. |
 
 Plugin logs: `com.encrypt.openclaw.sdPlugin/logs/`. Gateway connection state is
 logged there as `[gateway] connected (Gateway <version>)` and friends.
@@ -116,6 +117,13 @@ identity, then checks `sessions.list`, `cron.list`, `usage.status`,
 `usage.cost` and `exec.approval.list` against real payloads. Set
 `OPENCLAW_SD_TEST_TOKEN` to exercise the shared-token path, and
 `OPENCLAW_SD_CONFIG_DIR` to run it against your real stored identity.
+
+`npm run watch` rebuilds on save but does **not** restart the plugin: any plugin
+restart (that script, `streamdeck restart`, or a plugin update) **arms a Stream
+Deck 7.6 crash** — after such a restart, opening one of this plugin's panels in
+the same app session kills the app (see Troubleshooting). To pick up a new
+bundle, restart the Stream Deck app itself, or restart the plugin only when none
+of its panels is open.
 
 ### Verifying the property inspectors
 
